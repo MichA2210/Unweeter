@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  player: {fileID: 0}
+  player: {fileID: 3252085083358080092, guid: 2eb3b14b1722e894dab690864f02acf5, type: 3}
   battleStand: {fileID: 9143710634457107815, guid: e501aba3f8f8c3e43925a08e3602fb77,
     type: 3}
   enemy: {fileID: 901138261662883787}

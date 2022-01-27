@@ -20,12 +20,12 @@ public class BattleSystem : MonoBehaviour
             state = BattleState.START;
 
             other.transform.position = playerPos.position;
-            //player = other.gameObject;
-            //player.SetActive(false);
+            player = other.gameObject;
+            player.SetActive(false);
             SetupBattle();
         }
     }
-
+    
     void SetupBattle()
     {
         Instantiate(battleStand, playerPos);
