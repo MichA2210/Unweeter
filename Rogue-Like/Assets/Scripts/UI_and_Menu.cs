@@ -61,7 +61,7 @@ public class UI_and_Menu : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                LoadLevel(nextLevel); //SceneManager.GetActiveScene().buildIndex + 1)
+                LoadLevel(nextLevel);  //LoadLevel(SceneManager.GetActiveScene().buildIndex + 1); 
             }
         }
     }
