@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TBEnemy : TBCharacter
 {
@@ -17,6 +18,13 @@ public class TBEnemy : TBCharacter
     {
         if (e.CombatEnd)
         {
+           
+            Debug.Log(SceneManager.GetActiveScene().buildIndex);
+            if (SceneManager.GetActiveScene().buildIndex == 3)
+            {
+                //cinematica
+                StartCoroutine(TimeOut.Set(1f, () => SceneManager.LoadScene(5)));
+            }
             CombatSystem.ChangedCharacter -= OnCombatChange;
             return;
         }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TBPlayer : TBCharacter
 {
@@ -161,6 +162,7 @@ public class TBPlayer : TBCharacter
     {
         CombatSystem.End(this);
         //Game Over Screen
+        StartCoroutine(TimeOut.Set(1f, ()=>SceneManager.LoadScene(4)));
     }
     public float GetCurrentAnimatorTime(Animator targetAnim, int layer = 0)
     {
