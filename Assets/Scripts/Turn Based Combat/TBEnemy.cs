@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class TBEnemy : TBCharacter
 {
@@ -74,6 +75,7 @@ public class TBEnemy : TBCharacter
     {
         CharacterState = TBCharacterState.Attacking;
         animator.SetTrigger("Attack");
+        m_Player.DamageAnimation(unit.damage);
         StartCoroutine(TimeOut.Set(1f, ()=>AfterAttack(unit.damage)) );
     }
     protected override void Heal()
@@ -100,7 +102,6 @@ public class TBEnemy : TBCharacter
         Destroy(transform.parent.gameObject);
         CombatSystem.End(this);
     }
-
     //Animation
     void HealthAnimation(int healing)
     {

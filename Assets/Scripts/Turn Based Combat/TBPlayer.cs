@@ -81,22 +81,6 @@ public class TBPlayer : TBCharacter
                     }
             }
         }
-        else if ( CharacterState == TBCharacterState.Hurting)
-        {
-            // Check if attack animation ended
-            if (GetCurrentAnimatorTime(animator) > k_AnimationProgressThreshold)
-            {
-                CharacterState = TBCharacterState.WaitingForSelf;
-            }
-        }
-        else if (CharacterState == TBCharacterState.Dying)
-        {
-            // Check if attack animation ended
-            if (GetCurrentAnimatorTime(animator) > k_AnimationProgressThreshold)
-            {
-                OnceDead();
-            }
-        }
     }
     // Setup
     public void Setup(TBCombat CombatSystem, TBEnemy Enemy, Vector2 MoveTo) {
@@ -120,7 +104,6 @@ public class TBPlayer : TBCharacter
         {
             CharacterState = TBCharacterState.Hurting;
         }
-        healthSlider.value = unit.currentHP;
     }
     public void ReceiveHeal(int healing)
     {
@@ -137,36 +120,63 @@ public class TBPlayer : TBCharacter
         CharacterState = TBCharacterState.Attacking;
         animator.SetTrigger("Attack");
         m_Enemy.DamageAnimation(unit.damage);
-        StartCoroutine(TimeOut.Set(1f, AfterAttack));
+        StartCoroutine(TimeOut.Set(1f, ()=>AfterAttack(unit.damage)));
     }
     protected override void Heal()
     {
         CharacterState = TBCharacterState.Healing;
         animator.SetTrigger("Heal");
-        StartCoroutine(TimeOut.Set(1f, AfterHeal));
+        int healing = Random.Range(unit.minHeal, unit.maxHeal + 1);
+        HealthAnimation(healing);
+        StartCoroutine(TimeOut.Set(1f, () => AfterHeal(healing)));
     }
+    //Animation
+    void HealthAnimation(int healing)
+    {
+        StartCoroutine(
+            TimeOut.InterpolateFloat(
+                unit.currentHP,
+                unit.currentHP + healing,
+                .4f,
+                x => healthSlider.value = Mathf.Clamp(x, healthSlider.minValue, healthSlider.maxValue)
+            )
+        );
+    }
+    public void DamageAnimation(int damage)
+    {
+        StartCoroutine(
+            TimeOut.InterpolateFloat(
+                unit.currentHP,
+                unit.currentHP - damage,
+                .4f,
+                x => healthSlider.value = Mathf.Clamp(x, healthSlider.minValue, healthSlider.maxValue)
+            )
+        );
+    }
+    protected void AfterAttack(int damage)
+    {
+        m_Enemy.TakeDamage(damage);
+        CombatSystem.Next(this);
+    }
+    protected void AfterHeal(int healing)
+    {
+        unit.currentHP += healing;
+        unit.currentHP = unit.currentHP > unit.maxHP ? unit.maxHP : unit.currentHP;
+        CombatSystem.Next(this);
+    }
+    //Unimplemented
     protected override void AfterAttack()
     {
-        m_Enemy.TakeDamage(unit.damage);
-        CombatSystem.Next(this);
+        throw new System.NotImplementedException();
     }
     protected override void AfterHeal()
     {
-        unit.currentHP += Random.Range(unit.minHeal, unit.maxHeal + 1);
-        unit.currentHP = unit.currentHP > unit.maxHP ? unit.maxHP : unit.currentHP;
-        healthSlider.value = unit.currentHP;
-        CombatSystem.Next(this);
+        throw new System.NotImplementedException();
     }
     protected override void OnceDead()
     {
         CombatSystem.End(this);
         //Game Over Screen
-    }
-    public float GetCurrentAnimatorTime(Animator targetAnim, int layer = 0)
-    {
-        AnimatorStateInfo animState = targetAnim.GetCurrentAnimatorStateInfo(layer);
-        float currentTime = animState.normalizedTime % 1;
-        return currentTime;
     }
 
     // Button Events
