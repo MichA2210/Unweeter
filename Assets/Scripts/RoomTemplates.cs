@@ -34,12 +34,12 @@ public class RoomTemplates : MonoBehaviour
                     Instantiate(boss, rooms[i].transform.position, Quaternion.identity);
                     spawnedBoss = true;
                 }
-                else if (i == rooms.Count - 2)
-                {
-                    Instantiate(mandatoryStatue, rooms[i].transform.position, Quaternion.identity);
-                    spawnedMandatoryStatue = true;
-                    fillRooms = true;
-                }
+                //else if (i == rooms.Count - 2)
+                //{
+                //    Instantiate(mandatoryStatue, rooms[i].transform.position, Quaternion.identity);
+                //    spawnedMandatoryStatue = true;
+                //    fillRooms = true;
+                //}
                 else if (i < rooms.Count - 2 && i > 0)
                 {
                     rand = Random.Range(0, entities.Length);
