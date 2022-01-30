@@ -12,8 +12,6 @@ public class TBEnemy : TBCharacter
     private Slider slider;
     public Animator animator;
 
-    private const float k_AnimationProgressThreshold = 0.99f;
-
     // Event Listener
     public override void OnCombatChange(object sender, TBCSystemEventArgs e)
     {
@@ -31,41 +29,14 @@ public class TBEnemy : TBCharacter
     }
     void Update()
     {
-        if( CharacterState == TBCharacterState.WaitingForSelf)
+        if (CharacterState == TBCharacterState.WaitingForSelf)
         {
-            int r = Random.Range(0, 1);
-
-            if (r == 1)
-            {
-                Attack(); 
-            }
-            else
+            if (Random.Range(0f, 1f) > unit.attackHealBalance)
             {
                 Attack();
-            }
-        }
-        else if (CharacterState == TBCharacterState.Attacking)
-        {
-            // Check if attack animation ended
-            if (GetCurrentAnimatorTime(animator) > k_AnimationProgressThreshold)
+            } else
             {
-                AfterAttack();
-            }
-        }
-        else if (CharacterState == TBCharacterState.Healing)
-        {
-            // Check if attack animation ended
-            if (GetCurrentAnimatorTime(animator) > k_AnimationProgressThreshold)
-            {
-                AfterHeal();
-            }
-        }
-        else if (CharacterState == TBCharacterState.Dying)
-        {
-            // Check if attack animation ended
-            if (GetCurrentAnimatorTime(animator) > k_AnimationProgressThreshold)
-            {
-                OnceDead();
+                Heal();
             }
         }
     }
@@ -81,13 +52,11 @@ public class TBEnemy : TBCharacter
 
         slider.minValue = 0;
         slider.maxValue = unit.maxHP;
-        slider.value    = unit.currentHP = unit.maxHP;
+        slider.value = unit.currentHP = unit.maxHP;
     }
     public override void TakeDamage(int damage)
     {
         unit.currentHP -= damage;
-
-        slider.value = unit.currentHP;
 
         if (unit.currentHP <= 0)
         {
@@ -95,6 +64,7 @@ public class TBEnemy : TBCharacter
             CombatSystem.ChangedCharacter -= OnCombatChange;
             animator.SetTrigger("Death");
             CharacterState = TBCharacterState.Dying;
+            StartCoroutine(TimeOut.Set(1f, OnceDead));
         }
         else
         {
@@ -105,22 +75,25 @@ public class TBEnemy : TBCharacter
     {
         CharacterState = TBCharacterState.Attacking;
         animator.SetTrigger("Attack");
+        StartCoroutine(TimeOut.Set(1f, ()=>AfterAttack(unit.damage)) );
     }
     protected override void Heal()
     {
         CharacterState = TBCharacterState.Healing;
         animator.SetTrigger("Heal");
+        int healing = Random.Range(unit.minHeal, unit.maxHeal+1);
+        HealthAnimation(healing);
+        StartCoroutine(TimeOut.Set(1f, () => AfterHeal(healing)));
     }
-    protected override void AfterAttack()
+    protected void AfterAttack(int Damage)
     {
         m_Player.TakeDamage(unit.damage);
         CombatSystem.Next(this);
     }
-    protected override void AfterHeal()
+    protected void AfterHeal(int healing)
     {
-        unit.currentHP += Random.Range(3, 15);
+        unit.currentHP += healing;
         unit.currentHP = unit.currentHP > unit.maxHP ? unit.maxHP : unit.currentHP;
-        slider.value = unit.currentHP;
         CombatSystem.Next(this);
     }
     protected override void OnceDead()
@@ -128,10 +101,39 @@ public class TBEnemy : TBCharacter
         Destroy(transform.parent.gameObject);
         CombatSystem.End(this);
     }
-    public float GetCurrentAnimatorTime(Animator targetAnim, int layer = 0)
+
+    //Animation
+    void HealthAnimation(int healing)
     {
-        AnimatorStateInfo animState = targetAnim.GetCurrentAnimatorStateInfo(layer);
-        float currentTime = animState.normalizedTime % 1;
-        return currentTime;
+        StartCoroutine(
+            TimeOut.InterpolateFloat(
+                unit.currentHP,
+                unit.currentHP + healing,
+                .4f,
+                x => slider.value = Mathf.Clamp(x, slider.minValue, slider.maxValue)
+            )
+        );
+    }
+
+    public void DamageAnimation(int damage)
+    {
+        StartCoroutine(
+            TimeOut.InterpolateFloat(
+                unit.currentHP,
+                unit.currentHP - damage,
+                .4f,
+                x => slider.value = Mathf.Clamp(x, slider.minValue, slider.maxValue)
+            )
+        );
+    }
+    //Unimplemented
+    protected override void AfterAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void AfterHeal()
+    {
+        throw new System.NotImplementedException();
     }
 }

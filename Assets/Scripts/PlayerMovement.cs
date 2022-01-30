@@ -34,15 +34,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 jump = true;
             }
-
-            if (Input.GetButtonDown("Crouch"))
-            {
-                crouch = true;
-            }
-            else if (Input.GetButtonUp("Crouch"))
-            {
-                crouch = false;
-            }
         }
 
         if (enemyRoom == null)
@@ -53,15 +44,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (crouch == true)
-        {
-            horizontalMove = 0;
-        }
-        else
-        {
-            controller.Move( ( canMove ? horizontalMove : 0) * Time.fixedDeltaTime, crouch, jump);
-            jump = false;
-        }
+        controller.Move( ( canMove ? horizontalMove : 0) * Time.fixedDeltaTime, crouch, jump);
+        jump = false;
     }
 
     public void SetMove(bool move)
@@ -81,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
             SetMove(false);
             CombatSystem = new TBCombat( player, enemy);
             SetMove(false);
+            animator.SetFloat("Moving", 0);
         }
     }
 }

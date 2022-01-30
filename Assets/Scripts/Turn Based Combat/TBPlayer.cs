@@ -11,14 +11,10 @@ public class TBPlayer : TBCharacter
 
     private bool m_hasLanded = false;
 
-    [SerializeField]
-    [Range(0.1f, 5f)]
-    private float k_DisplacementSpeed = 2.5f;
+    private const float k_DisplacementSpeed = 2.5f;
 
-    [SerializeField]
-    [Range(0.01f, 0.5f)]
-    private float k_PositioningThreshold = 0.08f;
-    private const float k_AnimationProgressThreshold = 0.99f;
+    private const float k_PositioningThreshold = 0.18f;
+    private const float k_AnimationProgressThreshold = 0.9f;
 
     private GameObject combatCanvas;
     public  GameObject enemyHealthBar;
@@ -27,6 +23,7 @@ public class TBPlayer : TBCharacter
     private Unit unit;
     private Animator animator;
     private CharacterController2D characterController2D;
+    private Rigidbody2D rb;
 
     // Event Listener
     public override void OnCombatChange(object sender, TBCSystemEventArgs e)
@@ -54,6 +51,7 @@ public class TBPlayer : TBCharacter
         unit = GetComponent<Unit>();
         animator = GetComponent<Animator>();
         characterController2D = GetComponent<CharacterController2D>();
+        rb = GetComponent<Rigidbody2D>();
 
         healthSlider.minValue = 0;
         healthSlider.maxValue = unit.maxHP;
@@ -66,29 +64,21 @@ public class TBPlayer : TBCharacter
         {
             attackButton.Select();
             float deltaX = m_MoveTo.x - transform.position.x;
-            characterController2D.Move( k_DisplacementSpeed * deltaX / Mathf.Abs(deltaX), false, false);
-            if ( Mathf.Abs(deltaX) < k_PositioningThreshold && m_hasLanded )
+            characterController2D.Move(k_DisplacementSpeed * deltaX / Mathf.Abs(deltaX), false, false);
+
+            float abs = Mathf.Abs(deltaX);
+
+            if( abs < k_PositioningThreshold)
             {
-                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-                characterController2D.Face(true);
-                CharacterState = TBCharacterState.WaitingForSelf;
-                combatCanvas.SetActive(true);
-            }
-        }
-        else if ( CharacterState == TBCharacterState.Attacking)
-        {
-            // Check if attack animation ended
-            if (GetCurrentAnimatorTime(animator) > k_AnimationProgressThreshold)
-            {
-                AfterAttack();
-            }
-        }
-        else if ( CharacterState == TBCharacterState.Healing)
-        {
-            // Check if attack animation ended
-            if (GetCurrentAnimatorTime(animator) > k_AnimationProgressThreshold)
-            {
-                AfterHeal();
+                    //transform.position.Set(m_MoveTo.x, transform.position.y, transform.position.z);
+                    rb.velocity.Set(0, rb.velocity.y);
+                    characterController2D.FaceRight();
+                    if (m_hasLanded)
+                    {
+                        rb.velocity = Vector2.zero;
+                        CharacterState = TBCharacterState.WaitingForSelf;
+                        combatCanvas.SetActive(true);
+                    }
             }
         }
         else if ( CharacterState == TBCharacterState.Hurting)
@@ -114,7 +104,6 @@ public class TBPlayer : TBCharacter
         m_Enemy = Enemy;
         m_MoveTo = MoveTo;
         m_hasLanded = false;
-        //m_hasLanded = GetComponent<CharacterController2D>().Grounded;
     }
     // TBCharacter implementation
     public override void TakeDamage(int damage)
@@ -125,7 +114,9 @@ public class TBPlayer : TBCharacter
             unit.currentHP = 0;
             animator.SetTrigger("Death");
             CharacterState = TBCharacterState.Dying;
-        }else
+            StartCoroutine(TimeOut.Set(1f, OnceDead));
+        }
+        else
         {
             CharacterState = TBCharacterState.Hurting;
         }
@@ -145,11 +136,14 @@ public class TBPlayer : TBCharacter
     {
         CharacterState = TBCharacterState.Attacking;
         animator.SetTrigger("Attack");
+        m_Enemy.DamageAnimation(unit.damage);
+        StartCoroutine(TimeOut.Set(1f, AfterAttack));
     }
     protected override void Heal()
     {
         CharacterState = TBCharacterState.Healing;
         animator.SetTrigger("Heal");
+        StartCoroutine(TimeOut.Set(1f, AfterHeal));
     }
     protected override void AfterAttack()
     {
@@ -158,7 +152,7 @@ public class TBPlayer : TBCharacter
     }
     protected override void AfterHeal()
     {
-        unit.currentHP += Random.Range(3, 15);
+        unit.currentHP += Random.Range(unit.minHeal, unit.maxHeal + 1);
         unit.currentHP = unit.currentHP > unit.maxHP ? unit.maxHP : unit.currentHP;
         healthSlider.value = unit.currentHP;
         CombatSystem.Next(this);

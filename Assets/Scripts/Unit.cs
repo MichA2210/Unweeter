@@ -6,4 +6,8 @@ public class Unit : MonoBehaviour
     public int damage;
     public int maxHP;
     public int currentHP;
+    public int minHeal;
+    public int maxHeal;
+    [Range(0f, 1f)]
+    public float attackHealBalance;
 }

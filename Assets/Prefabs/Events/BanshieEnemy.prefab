@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 901138261662883786}
   - component: {fileID: 901138261662883830}
   - component: {fileID: 901138261662883831}
-  - component: {fileID: 901138261662883784}
-  - component: {fileID: 901138261662883785}
   - component: {fileID: 901138261662883829}
   m_Layer: 10
   m_Name: BanshieEnemy
@@ -72,7 +70,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 901138261662883787}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a4793ac14748eca40a134996b5f27e11, type: 3}
   m_Name: 
@@ -81,43 +79,6 @@ MonoBehaviour:
   speed: 400
   nextWaypointDistance: 3
   enemyGFX: {fileID: 0}
---- !u!58 &901138261662883784
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 901138261662883787}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 7, y: -2.01}
-  serializedVersion: 2
-  m_Radius: 0.88
---- !u!50 &901138261662883785
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 901138261662883787}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 1.5
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!61 &901138261662883829
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -275,9 +236,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Banshie
   unitLevel: 0
-  damage: 5
+  damage: 10
   maxHP: 20
   currentHP: 20
+  minHeal: 3
+  maxHeal: 20
+  attackHealBalance: 0.3
 --- !u!1 &8305448110698695500
 GameObject:
   m_ObjectHideFlags: 0

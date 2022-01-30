@@ -147,7 +147,7 @@ public class CharacterController2D : MonoBehaviour
 		}
 	}
 
-	public void Face(bool right = true)
+	public void FaceRight(bool right = true)
     {
 		m_FacingRight = right;
 		Vector2 scaling = transform.localScale;
