@@ -62,6 +62,11 @@ public class TBEnemy : TBCharacter
         slider.minValue = 0;
         slider.maxValue = unit.maxHP;
         slider.value = unit.currentHP = unit.maxHP;
+
+        if( CompareTag("Boss"))
+        {
+            animator.SetBool("IsIdle", true);
+        }
     }
     public override void TakeDamage(int damage)
     {

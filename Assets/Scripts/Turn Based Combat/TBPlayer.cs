@@ -2,6 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class TBPlayer : TBCharacter
 {
@@ -25,6 +26,7 @@ public class TBPlayer : TBCharacter
     private Animator animator;
     private CharacterController2D characterController2D;
     private Rigidbody2D rb;
+    private AudioSource audioSource;
 
     // Event Listener
     public override void OnCombatChange(object sender, TBCSystemEventArgs e)
@@ -53,6 +55,7 @@ public class TBPlayer : TBCharacter
         animator = GetComponent<Animator>();
         characterController2D = GetComponent<CharacterController2D>();
         rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponents<AudioSource>()[1];
 
         healthSlider.minValue = 0;
         healthSlider.maxValue = unit.maxHP;
@@ -120,6 +123,7 @@ public class TBPlayer : TBCharacter
     {
         CharacterState = TBCharacterState.Attacking;
         animator.SetTrigger("Attack");
+        audioSource.PlayOneShot(audioSource.clip, 3f);
         m_Enemy.DamageAnimation(unit.damage);
         StartCoroutine(TimeOut.Set(1f, ()=>AfterAttack(unit.damage)));
     }

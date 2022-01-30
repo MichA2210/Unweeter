@@ -15,6 +15,7 @@ TagManager:
   - Ground
   - PlayerBattlePos
   - EnemyRoom
+  - Boss
   layers:
   - Default
   - TransparentFX
