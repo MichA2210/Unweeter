@@ -11,12 +11,20 @@ public class TBEnemy : TBCharacter
     private Unit unit;
     private Slider slider;
     public Animator animator;
+    private AudioSource audioSource;
 
     // Event Listener
     public override void OnCombatChange(object sender, TBCSystemEventArgs e)
     {
         if (e.CombatEnd)
         {
+           
+            Debug.Log(SceneManager.GetActiveScene().buildIndex);
+            if (SceneManager.GetActiveScene().buildIndex == 3)
+            {
+                //cinematica
+                StartCoroutine(TimeOut.Set(1f, () => SceneManager.LoadScene(5)));
+            }
             CombatSystem.ChangedCharacter -= OnCombatChange;
             return;
         }
@@ -26,6 +34,7 @@ public class TBEnemy : TBCharacter
     void Start()
     {
         unit = GetComponent<Unit>();
+        audioSource = GetComponent<AudioSource>();
     }
     void Update()
     {
@@ -74,6 +83,7 @@ public class TBEnemy : TBCharacter
     protected override void Attack()
     {
         CharacterState = TBCharacterState.Attacking;
+        audioSource.Play();
         animator.SetTrigger("Attack");
         m_Player.DamageAnimation(unit.damage);
         StartCoroutine(TimeOut.Set(1f, ()=>AfterAttack(unit.damage)) );
