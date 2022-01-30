@@ -9,7 +9,7 @@ public interface ITBCharacter
 // Heredado a todos los personajes que lo usan
 public abstract class TBCharacter : MonoBehaviour, ITBCharacter
 {
-    public TBCombat CombatSystem;
+    protected TBCombat CombatSystem = null;
     public TBCharacterState CharacterState;
 
     public void Setup(TBCombat CombatSystem)

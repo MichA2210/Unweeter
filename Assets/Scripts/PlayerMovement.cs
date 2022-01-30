@@ -12,31 +12,42 @@ public class PlayerMovement : MonoBehaviour
     float horizontalMove = 0f;
     bool jump = false;
     bool crouch = false;
-
+    [SerializeField]
     bool canMove = true;
 
+    private Animator animator;
+
     // Update is called once per frame
+    private void Start()
+    {
+        enemyRoom = null;
+        animator = GetComponent<Animator>();
+    }
     void Update()
     {
-        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed * ( canMove ? 1f : 0f );
-       
-        if (Input.GetButtonDown("Jump") && canMove)
+        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+
+        if(canMove)
         {
-            jump = true;
+            animator.SetFloat("Moving", Mathf.Abs(horizontalMove));
+            if (Input.GetButtonDown("Jump"))
+            {
+                jump = true;
+            }
+
+            if (Input.GetButtonDown("Crouch"))
+            {
+                crouch = true;
+            }
+            else if (Input.GetButtonUp("Crouch"))
+            {
+                crouch = false;
+            }
         }
 
-        if (Input.GetButtonDown("Crouch") && canMove)
+        if (enemyRoom == null)
         {
-            crouch = true;
-        }
-        else if (Input.GetButtonUp("Crouch") && canMove)
-        {
-            crouch = false;
-        }
-
-        if(Input.GetButtonDown("Select") && canMove)
-        {
-            GetComponent<Animator>().SetTrigger("Move");
+            SetMove(true);
         }
     }
 
@@ -48,32 +59,28 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            controller.Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
+            controller.Move( ( canMove ? horizontalMove : 0) * Time.fixedDeltaTime, crouch, jump);
             jump = false;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if ( other.gameObject.layer == 10 )
-        {
-            TBPlayer player = GetComponent<TBPlayer>();
-            TBEnemy enemy = other.GetComponentInChildren<TBEnemy>();
-            CombatSystem = new TBCombat( player, enemy);
-            SetMove(false);
-        }
-    }
-
-    private void SetMove(bool move)
+    public void SetMove(bool move)
     {
         canMove = move;
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    GameObject enemyRoom;
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer == 10)
+        if ( other.gameObject.layer == 10 && enemyRoom == null )
         {
-            SetMove(true);
+            enemyRoom = other.gameObject;
+            TBPlayer player = GetComponent<TBPlayer>();
+            TBEnemy enemy = other.GetComponentInChildren<TBEnemy>();
+            SetMove(false);
+            CombatSystem = new TBCombat( player, enemy);
+            SetMove(false);
         }
     }
 }

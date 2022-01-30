@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: hero-attack-side
+  m_Name: hero-damage
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,9 +20,10 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 21300000, guid: a15828d8a639e8042a4edd272d8ee799, type: 3}
+      value: {fileID: 21300000, guid: 2f105e0907f83b246a768254160a2bae, type: 3}
     - time: 0.083333336
-      value: {fileID: 21300000, guid: a15828d8a639e8042a4edd272d8ee799, type: 3}
+      value: {fileID: -8272966202441996992, guid: 0f1906420bf4f0e45818bd7591fb453c,
+        type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -42,8 +43,8 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 21300000, guid: a15828d8a639e8042a4edd272d8ee799, type: 3}
-    - {fileID: 21300000, guid: a15828d8a639e8042a4edd272d8ee799, type: 3}
+    - {fileID: 21300000, guid: 2f105e0907f83b246a768254160a2bae, type: 3}
+    - {fileID: -8272966202441996992, guid: 0f1906420bf4f0e45818bd7591fb453c, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}

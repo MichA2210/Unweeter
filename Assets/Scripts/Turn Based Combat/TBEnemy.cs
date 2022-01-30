@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TBEnemy : TBCharacter
 {
     private TBPlayer m_Player { get; set; }
+    private GameObject m_EnemyHealthBar { get; set; }
 
     private Unit unit;
+    private Slider slider;
     public Animator animator;
 
     private const float k_AnimationProgressThreshold = 0.99f;
@@ -34,11 +37,11 @@ public class TBEnemy : TBCharacter
 
             if (r == 1)
             {
-                Heal(); 
-            } 
+                Attack(); 
+            }
             else
             {
-                Heal();
+                Attack();
             }
         }
         else if (CharacterState == TBCharacterState.Attacking)
@@ -67,15 +70,24 @@ public class TBEnemy : TBCharacter
         }
     }
     // Setup
-    public void Setup(TBCombat CombatSystem, TBPlayer Player)
+    public void Setup(TBCombat CombatSystem, TBPlayer Player, GameObject EnemyHealthBar)
     {
-        base.Setup(CombatSystem);
-        this.m_Player = Player;
+        Setup(CombatSystem);
+        m_Player = Player;
+        m_EnemyHealthBar = EnemyHealthBar;
+        m_EnemyHealthBar.SetActive(true);
+        slider = m_EnemyHealthBar.GetComponent<Slider>();
         CharacterState = TBCharacterState.WaitingForOther;
+
+        slider.minValue = 0;
+        slider.maxValue = unit.maxHP;
+        slider.value    = unit.currentHP = unit.maxHP;
     }
     public override void TakeDamage(int damage)
     {
         unit.currentHP -= damage;
+
+        slider.value = unit.currentHP;
 
         if (unit.currentHP <= 0)
         {
@@ -83,6 +95,10 @@ public class TBEnemy : TBCharacter
             CombatSystem.ChangedCharacter -= OnCombatChange;
             animator.SetTrigger("Death");
             CharacterState = TBCharacterState.Dying;
+        }
+        else
+        {
+            CharacterState = TBCharacterState.Hurting;
         }
     }
     protected override void Attack()
@@ -102,9 +118,9 @@ public class TBEnemy : TBCharacter
     }
     protected override void AfterHeal()
     {
-        Debug.Log("Healing....");
         unit.currentHP += Random.Range(3, 15);
         unit.currentHP = unit.currentHP > unit.maxHP ? unit.maxHP : unit.currentHP;
+        slider.value = unit.currentHP;
         CombatSystem.Next(this);
     }
     protected override void OnceDead()

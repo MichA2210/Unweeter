@@ -10,6 +10,7 @@ public enum TBCharacterState
     WaitingForOther,
     Attacking,
     Healing,
+    Hurting,
     Moving,
     Dying
 }
@@ -27,7 +28,7 @@ public class TBCombat
     public TBCombat(TBPlayer player, TBEnemy enemy)
     {
         player.Setup(this, enemy, enemy.transform.parent.Find("PlayerBattlePos").transform.position);
-        enemy.Setup(this, player);
+        enemy.Setup(this, player, player.enemyHealthBar);
     }
 
     public void Next(TBEnemy enemy)
@@ -39,10 +40,14 @@ public class TBCombat
     {
         OnChange(false);
     }
-
-    public void End(TBCharacter caller)
+    public void End(TBEnemy enemy)
     {
-        OnChange( caller is TBEnemy , true);
+        OnChange(true, true);
+    }
+
+    public void End(TBPlayer player)
+    {
+        OnChange(false, true);
     }
 
     private void OnChange(bool IsPlayer, bool end = false)
