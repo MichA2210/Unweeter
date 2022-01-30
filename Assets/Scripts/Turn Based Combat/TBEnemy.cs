@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class TBEnemy : TBCharacter
 {
@@ -12,6 +13,7 @@ public class TBEnemy : TBCharacter
     private Unit unit;
     private Slider slider;
     public Animator animator;
+    private AudioSource audioSource;
 
     // Event Listener
     public override void OnCombatChange(object sender, TBCSystemEventArgs e)
@@ -34,6 +36,7 @@ public class TBEnemy : TBCharacter
     void Start()
     {
         unit = GetComponent<Unit>();
+        audioSource = GetComponent<AudioSource>();
     }
     void Update()
     {
@@ -82,6 +85,7 @@ public class TBEnemy : TBCharacter
     protected override void Attack()
     {
         CharacterState = TBCharacterState.Attacking;
+        audioSource.Play();
         animator.SetTrigger("Attack");
         StartCoroutine(TimeOut.Set(1f, ()=>AfterAttack(unit.damage)) );
     }
