@@ -40,9 +40,14 @@ public class TBCombat
         OnChange(false);
     }
 
-    public void End(TBCharacter caller)
+    public void End(TBEnemy enemy)
     {
-        OnChange( caller is TBEnemy , true);
+        OnChange(true, true);
+    }
+
+    public void End(TBPlayer player)
+    {
+        OnChange(false, true);
     }
 
     private void OnChange(bool IsPlayer, bool end = false)

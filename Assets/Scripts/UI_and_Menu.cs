@@ -16,6 +16,7 @@ public class UI_and_Menu : MonoBehaviour
     private bool startLevel;
     public Slider slider;
     public int nextLevel;
+    public static int cicles = 0;
 
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -36,8 +37,11 @@ public class UI_and_Menu : MonoBehaviour
         }
     }
 
-    public void LoadLevel(int scene)  //poner manualmente en Unity, la escena a cargar.
-    {                                   
+    //0 start, 1 dungeon, 2 Boss
+
+    public void LoadLevel(int scene)  //LoadLevel(int scene) //poner manualmente en Unity, la escena a cargar.
+    {
+        cicles++;
         StartCoroutine(LoadAsync(scene));
     }
 
@@ -61,7 +65,14 @@ public class UI_and_Menu : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                LoadLevel(nextLevel); //SceneManager.GetActiveScene().buildIndex + 1)
+                if (cicles == 3)
+                {
+                    LoadLevel(3);
+                }
+                else
+                {
+                    LoadLevel(nextLevel); //SceneManager.GetActiveScene().buildIndex + 1)
+                }
             }
         }
     }
