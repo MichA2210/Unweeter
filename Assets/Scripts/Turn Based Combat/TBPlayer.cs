@@ -8,7 +8,13 @@ public class TBPlayer : TBCharacter
 
     private TBEnemy m_Enemy { get; set; }
 
-    private const float k_PositioningThreshold = 0.0001f;
+    [SerializeField]
+    [Range(0.1f, 5f)]
+    private float k_DisplacementSpeed = 2.5f;
+
+    [SerializeField]
+    [Range(0.01f, 0.5f)]
+    private float k_PositioningThreshold = 0.08f;
     private const float k_AnimationProgressThreshold = 0.99f;
 
     private Unit unit;
@@ -34,14 +40,14 @@ public class TBPlayer : TBCharacter
     }
     void Update()
     {
+        if(CombatSystem != null)
         if( CharacterState == TBCharacterState.Starting)
         {
-            Vector2 vector = m_MoveTo - new Vector2(transform.position.x, transform.position.y);
-            characterController2D.Move( vector.x * 0.5f, false, false);
-            //string str = string.Format("m_MoveTo: {0}; transform.position: {1}", m_MoveTo, transform.position);
-            //Debug.Log(str);
-            if (vector.x < k_PositioningThreshold)
+            float deltaX = m_MoveTo.x - transform.position.x;
+            characterController2D.Move( k_DisplacementSpeed * deltaX / Mathf.Abs(deltaX), false, false);
+            if ( Mathf.Abs(deltaX) < k_PositioningThreshold)
             {
+                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 characterController2D.Face(true);
                 CharacterState = TBCharacterState.WaitingForSelf;
             }
@@ -50,7 +56,7 @@ public class TBPlayer : TBCharacter
         {
             if ( Input.GetKeyDown(KeyCode.A))
             {
-                m_SelectedOption = (m_SelectedOption - 1) % 2;
+                m_SelectedOption = Mathf.Abs((m_SelectedOption - 1)) % 2;
             } else if ( Input.GetKeyDown(KeyCode.D))
             {
                 m_SelectedOption = (m_SelectedOption + 1) % 2;
